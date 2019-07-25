@@ -30,7 +30,6 @@ class XXeFile:
             raise KeyError("Please specify a valid filetype")
         if not payload:
             raise KeyError("Please specify a valid payload")
-
         if not filetype in filetypes:
             raise KeyError("Please specify a valid filetype")
         if not payload in payloads:
