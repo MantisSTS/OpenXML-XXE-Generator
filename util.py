@@ -3,7 +3,9 @@ import shutil
 import tempfile
 from zipfile import ZipFile, ZIP_STORED, ZipInfo
 
-
+"""
+Borrowed from: https://github.com/PortSwigger/office-open-xml-editor/blob/master/UpdateableZipFile.py
+"""
 class UpdateableZipFile(ZipFile):
     class DeleteMarker(object):
         pass
