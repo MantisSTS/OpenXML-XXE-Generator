@@ -7,27 +7,11 @@ import tempfile
 from pl import payloads
 from ft import filetypes
 
-class XXeFile:
+
+class XXEFile:
     def __init__(
         self, host, protocol, filetype, payload, outfile=None, exfile=None
     ):
-
-        """
-        This should be dealt with by argparse
-        """
-        # if not host:
-        #     raise KeyError("Please specify a valid host")
-        # if not protocol:
-        #     raise KeyError("Please specify a valid protocol")
-        # if not filetype:
-        #     raise KeyError("Please specify a valid filetype")
-        # if not payload:
-        #     raise KeyError("Please specify a valid payload")
-        # if not filetype in filetypes:
-        #     raise KeyError("Please specify a valid filetype")
-        # if not payload in payloads:
-        #     raise KeyError("Please specify a valid payload")
-
         self.host = host
         self.protocol = protocol
         self.filetype = filetype
@@ -36,7 +20,6 @@ class XXeFile:
         self.description = payloads[payload]["description"]
         self.outfile = outfile
         self.exfile = exfile
-        # Hacky - Jordy please see what else we can do
         self.entity = payloads[payload]["entity"]
 
     def generate_payload(self):
@@ -68,7 +51,6 @@ class XXeFile:
     def replace_payload_vars(self, tplpath, ooxml=False):
 
         with open(tplpath, "r+", encoding="utf8") as tmpl:
-            # Clean payload
             if "__REMOTE_HOST__" in self.payload:
                 self.payload = self.payload.replace(
                     "__REMOTE_HOST__", self.host
@@ -80,7 +62,6 @@ class XXeFile:
             if "__EXFILE__" in self.payload:
                 self.payload = self.payload.replace("__EXFILE__", self.exfile)
 
-            # Replace vars in file
             tmpl.seek(0)
             tempdat = tmpl.read()
             if "__REMOTE_HOST__" in tempdat:
@@ -98,6 +79,7 @@ class XXeFile:
             if ooxml:
                 tmpl.seek(0)
                 tmpl.write(tempdat)
+
         return tempdat
 
     @property
@@ -162,7 +144,7 @@ def main():
     )
     args = parser.parse_args()
 
-    obj = XXeFile(
+    obj = XXEFile(
         args.host,
         args.protocol,
         args.filetype,
