@@ -44,8 +44,7 @@ class XXeFile:
             os.path.dirname(os.path.realpath(__file__)),
             self.template["template"],
         )
-        finalpath = self.outfile
-        print(finalpath)
+        outfile = self.outfile
         if tplpath is not None:
             if self.template["ooxml"]:
                 with zipfile.ZipFile(tplpath, "r") as zip_ref:
@@ -54,17 +53,19 @@ class XXeFile:
                     )
                     zip_ref.extractall(tempdir)
                     with zipfile.ZipFile(
-                        finalpath, "w", zipfile.ZIP_DEFLATED
+                        outfile, "w", zipfile.ZIP_DEFLATED
                     ) as final:
                         for fname in glob.glob(
                             tempdir + "/**/*.*", recursive=True
                         ):
+                            replaced_data = self.replace_payload_vars(fname, True)
                             final.write(fname, fname[len(tempdir) + 1 :])
             else:
-                self.replace_payload_vars(tplpath)
-        return finalpath
+                with open(outfile, 'w') as f:
+                    f.write(self.replace_payload_vars(tplpath))
+        return outfile
 
-    def replace_payload_vars(self, tplpath):
+    def replace_payload_vars(self, tplpath, ooxml=False):
 
         with open(tplpath, "r+", encoding="utf8") as tmpl:
             # Clean payload
@@ -94,8 +95,9 @@ class XXeFile:
                 tempdat = tempdat.replace("__PAYLOAD__", self.payload)
 
             # Seems although we need to seek to the beginning of the file before writing to it
-            tmpl.seek(0)
-            tmpl.write(tempdat)
+            if ooxml:
+                tmpl.seek(0)
+                tmpl.write(tempdat)
         return tempdat
 
     @property
