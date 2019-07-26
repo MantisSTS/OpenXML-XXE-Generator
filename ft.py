@@ -1,3 +1,5 @@
+import os
+
 filetypes = {
     "docx": {
         "ooxml": True,
