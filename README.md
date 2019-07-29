@@ -25,7 +25,8 @@ optional arguments:
 
 If you like this tool or feel like helping out, feel free to add more samples/filetypes/payloads.
 
-Payloads can be added in the pl.py -> payloads Dictionary.
-Filetypes can be added in the ft.py -> filetypes Dictionary.
+  Payloads can be added in the pl.py -> payloads Dictionary.
+  
+  Filetypes can be added in the ft.py -> filetypes Dictionary.
 
 The samples in the filetype dictionary can be added in the samples directory :)
