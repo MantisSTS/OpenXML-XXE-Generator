@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+__PAYLOAD__
+<cp:coreProperties xmlns:cp="__REMOTE_HOST__" xmlns:dc="__REMOTE_HOST__" xmlns:dcterms="__REMOTE_HOST__" xmlns:dcmitype="__REMOTE_HOST__" xmlns:xsi="__REMOTE_HOST__"><dc:creator>__ENTITY__</dc:creator><cp:lastModifiedBy>__ENTITY__</cp:lastModifiedBy><dcterms:created xsi:type="dcterms:W3CDTF">__ENTITY__</dcterms:created><dcterms:modified xsi:type="dcterms:W3CDTF">2019-07-24T00:06:05Z</dcterms:modified></cp:coreProperties>

