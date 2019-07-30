@@ -4,8 +4,8 @@ import os
 import glob
 import tempfile
 
-from pl import payloads
-from ft import filetypes
+from payloads import payloads
+from filetypes import filetypes
 
 
 class XXEFile:
